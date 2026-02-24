@@ -1,0 +1,22 @@
+package simulator.model;
+
+public class DefaultRegion extends Region {
+
+    @Override
+    public double getfood(AnimalInfo a, double dt) {
+        if(!a.getDiet().equals(Diet.CARNIVORO) && !a.getDiet().equals(Diet.HERVIVORO)){
+             throw new IllegalArgumentException("El animal tiene una dieta no correcta o nula.");
+        }
+        else{
+            double food = 0.0;
+            int n = super.busquedaHervivoros();
+            if(!a.getDiet().equals(Diet.CARNIVORO)){
+                food = 60.0*Math.exp(-Math.max(0, n-5.0)*2.0)*dt;
+            }
+             return food;
+        }
+    }
+
+    @Override
+    public void update(double dt) {}
+}

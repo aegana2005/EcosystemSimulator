@@ -102,7 +102,7 @@ public class Vector2D {
     return angle * 180.0 / Math.PI;
   }
 
-  public static Vector2D get_random_vector(double min, double max) {
+  public static Vector2D getRandomVector(double min, double max) {
     assert (max >= min);
     double x = min + Utils.RAND.nextDouble(max - min);
     double y = min + Utils.RAND.nextDouble(max - min);

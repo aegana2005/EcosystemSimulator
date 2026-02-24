@@ -1,0 +1,186 @@
+package simulator.model;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.function.Predicate;
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+public class RegionManager implements AnimalMapView{
+    private int cols;
+    private int rows;
+    private int width;
+    private int height;
+    private Map<Animal, Region> animalRegion;
+    private Region[][] regions;
+    private int cellWidth;
+    private int cellHeight;
+
+    public RegionManager(int cols, int rows, int width, int height){
+        this.cols = cols;
+        this.rows = rows;
+        this.width = width;
+        this.height = height;
+        this.animalRegion = new HashMap<Animal, Region>();
+        this.regions = new DefaultRegion[rows][cols];
+
+        this.cellWidth = width / rows;
+        this.cellWidth = height / cols;
+
+        // Inicializo la matriz para que los valores de dentro de la matriz para que estos no sean nulos.
+        for(int i = 0; i < rows; i++){
+            for(int j = 0; j < cols; j++){
+                this.regions[i][j] = new DefaultRegion();
+            }
+        }
+    }
+
+    // Metodo que devuelve la estructura JSON.
+    public JSONObject asJSON(){
+       JSONObject result = new JSONObject();
+       JSONArray arrayRegions = new JSONArray();
+
+       for(int i = 0; i < this.rows; i++){
+            for(int j = 0; j < this.cols; j++){
+                JSONObject datosRegions = new JSONObject();
+                datosRegions.put("row", i);
+                datosRegions.put("col", j);
+                datosRegions.put("data", this.regions[i][j].asJSON());
+                arrayRegions.put(datosRegions);
+            }
+        }
+
+       result.put("regions", arrayRegions);
+       return result;
+    }
+
+    @Override
+    public List<Animal> getAnimalsInRange(Animal e, Predicate<Animal> filter) {
+
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    // Al ser un AnimalInfo, no se si se puede acceder como clave al mapa.
+    @Override
+    public double getfood(AnimalInfo a, double dt) {
+        Region r = this.animalRegion.get(a);
+        return r.getfood(a, dt);
+    }
+
+    // Preguntar por esta funcion.
+    public void setRegion(int row, int col, Region r){
+        Region oldRegion = this.regions[row][col];
+        this.regions[row][col] = r;
+        for(Animal a : oldRegion.getAnimals()){
+            r.addAnimal(a);
+            this.getAnimalRegion().put(a, r);
+        }
+    }
+
+    public void registerAnimal(Animal a){
+        // En primer lugar tengo que transcribir las coordenadas del animal a (fila, columna).
+        int col = (int) Math.floor(a.getPosition().getX() / this.cellWidth);
+        int fila =  (int) Math.floor(a.getPosition().getY() / this.cellHeight); // Para quedarme solo con la parte entera, hago un cast a int para ignorar la parte decimal, que siempre es 0 por que uso la formula de math de redondear a lo bajo.
+        if(this.intToMatrix(fila, col)){ // Compruebo si esta dentro del tablero.
+            Region r = this.regions[fila][col];
+            if(r != null){
+                r.addAnimal(a);
+                this.animalRegion.put(a, r);
+                a.init(this);
+            }
+        }
+    }
+
+    // Quita de la lista de animales de la region donde estaba el animal.
+    public void unregisterAnimal(Animal a){
+        Region r = this.animalRegion.get(a); // Cojo las region del animal.
+
+        if(r != null){ // Si no es que ese animal no existia en la lista.
+            r.removeAnimal(a); // Quito al animal de la lista de animales de la region.
+            this.animalRegion.remove(a); // Y borro la region que conecta a ese animal.
+        }
+    }
+
+    public void updateanimalRegion(Animal a){
+        int col = (int) Math.floor(a.getPosition().getX() / this.cellWidth);
+        int fila =  (int) Math.floor(a.getPosition().getY() / this.cellHeight); // Para quedarme solo con la parte entera, hago un cast a int para ignorar la parte decimal.
+        if(this.intToMatrix(fila, col)){
+            Region rNew = this.regions[fila][col]; // Region actual del animal a
+            Region rOld = this.animalRegion.get(a); // Region que tenia antes el animal a.
+            if(rNew != null && !rNew.equals(rOld)){
+                 rNew.addAnimal(a);
+            }
+            if(rOld != null){
+                 rOld.removeAnimal(a);
+            }
+            this.animalRegion.put(a, rNew);
+        }
+    }
+
+    public void updateAllRegions(double dt){
+        for(int i = 0; i < this.rows; i++){
+            for(int j = 0; j < this.cols; j++){
+                this.regions[i][j].update(dt);
+            }
+        }
+    }
+
+    public boolean intToMatrix(int row, int col){
+        boolean correct = false;
+        if(row >= 0 && row < this.rows && col >= 0 && col < this.cols){
+            correct = true;
+        }
+        return correct;
+    }
+
+    public Map<Animal, Region> getAnimalRegion() {
+        return this.animalRegion;
+    }
+
+    public Region getRegion(int fila, int col){
+        return this.regions[fila][col];
+    }
+
+    public Region[][] getRegions() {
+        return this.regions;
+    }
+
+    public int getCellWidth() {
+        return this.cellWidth;
+    }
+
+    public int getCellHeight() {
+        return this.cellHeight;
+    }
+
+    @Override
+    public int getCols() {
+        return this.cols;
+    }
+
+    @Override
+    public int getRows() {
+        return this.rows;
+    }
+
+    @Override
+    public int getWidth() {
+       return this.width;
+    }
+
+    @Override
+    public int getHeight() {
+        return this.height;
+    }
+
+    @Override
+    public int getRegionWidth() {
+        return this.cellWidth;
+    }
+
+    @Override
+    public int getRegionHeight() {
+        return this.cellHeight;
+    }
+}
