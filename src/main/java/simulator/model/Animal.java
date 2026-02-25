@@ -8,16 +8,17 @@ import simulator.misc.Vector2D;
 
 public abstract class Animal implements Entity, AnimalInfo {
 
-    //Atributos que usaran los tipos de animales que heredaran de esta clase Animal
+    // Atributos que usaran los tipos de animales que heredaran de esta clase Animal
     protected String geneticCode; // cadena de caracteres que sirve para saber si dos animales pden emparejarse
     protected Diet diet; // Es el enumerado de la clase dieta
     protected State state;
     protected Vector2D pos;
     protected Vector2D dest;
     protected double energy; // Si llega a 0.0, el animal muere.
-    protected double speed; 
+    protected double speed;
     protected double age; // Si llega a un maximo (dependiendo del animal), ese animal muere.
-    protected double desire; // Deseo del animal. Sirve para decidir si el animal sale o entra de un estado de emparejamiento.
+    protected double desire; // Deseo del animal. Sirve para decidir si el animal sale o entra de un estado
+                             // de emparejamiento.
     protected double sightRange; // Radio de vision del animal, que sirve para decidir que animales puede ver.
     protected Animal mateTarget; // Referencia a un animal con el que quiere emparejarse.
     protected Animal baby; // Referencia que indica si el animal lleva un bebe que NO ha nacido aún.
@@ -25,8 +26,9 @@ public abstract class Animal implements Entity, AnimalInfo {
     protected SelectionStrategy mateStrategy; // Estrategia de seleccion para buscar pareja.
 
     // Primera constructora, del animal en general.
-    protected Animal(String geneticCode, Diet diet, double sightRange, double initSpeed, SelectionStrategy mateStrategy, Vector2D pos){
-        if(!geneticCode.isEmpty() && sightRange > 0 && initSpeed > 0 && mateStrategy != null){
+    protected Animal(String geneticCode, Diet diet, double sightRange, double initSpeed, SelectionStrategy mateStrategy,
+            Vector2D pos) {
+        if (!geneticCode.isEmpty() && sightRange > 0 && initSpeed > 0 && mateStrategy != null) {
             this.geneticCode = geneticCode;
             this.diet = diet;
             this.sightRange = sightRange;
@@ -40,31 +42,30 @@ public abstract class Animal implements Entity, AnimalInfo {
             this.mateTarget = null;
             this.baby = null;
             this.regionMngr = null;
-        }
-        else{
+        } else {
             throw new IllegalArgumentException("Los valores correspondientes al animal no son correctos");
         }
-    } 
+    }
 
     // Segunda constructora, para la de los bebes.
-    protected Animal(Animal p1, Animal p2){
-       this.dest = null;
-       this.baby = null;
-       this.mateTarget = null;
-       this.regionMngr = null;
-       this.state = State.NORMAL;
-       this.desire = 0.0;
-       this.geneticCode = p1.geneticCode;
-       this.diet = p1.diet;
-       this.mateStrategy = p2.mateStrategy;
-       this.energy = (p1.energy + p2.energy) / 2;
-       this.pos = p1.getPosition().plus(Vector2D.getRandomVector(-1,1).scale(60.0*(Utils.RAND.nextGaussian()+1)));
-       this.sightRange = Utils.getRandomizedParameter((p1.getSightRange()+p2.getSightRange())/2,0.2);
-       this.speed = Utils.getRandomizedParameter((p1.getSpeed()+p2.getSpeed())/2, 0.2);
+    protected Animal(Animal p1, Animal p2) {
+        this.dest = null;
+        this.baby = null;
+        this.mateTarget = null;
+        this.regionMngr = null;
+        this.state = State.NORMAL;
+        this.desire = 0.0;
+        this.geneticCode = p1.geneticCode;
+        this.diet = p1.diet;
+        this.mateStrategy = p2.mateStrategy;
+        this.energy = (p1.energy + p2.energy) / 2;
+        this.pos = p1.getPosition().plus(Vector2D.getRandomVector(-1, 1).scale(60.0 * (Utils.RAND.nextGaussian() + 1)));
+        this.sightRange = Utils.getRandomizedParameter((p1.getSightRange() + p2.getSightRange()) / 2, 0.2);
+        this.speed = Utils.getRandomizedParameter((p1.getSpeed() + p2.getSpeed()) / 2, 0.2);
     }
 
     // Metodo que devuelve la estructura JSON.
-    public JSONObject asJSON(){
+    public JSONObject asJSON() {
         JSONObject j = new JSONObject();
         JSONArray poss = new JSONArray();
         poss.put(this.pos.getX());
@@ -76,63 +77,77 @@ public abstract class Animal implements Entity, AnimalInfo {
         return j;
     }
 
-    //@Override
+    // @Override
     // public void update(double dt) {}
 
-    public void init(AnimalMapView regMngr){
+    public void init(AnimalMapView regMngr) {
         double x, y;
         this.setRegionMngr(regMngr);
-        if(pos == null){
-            // NextDoubole genera numero aleatorio entre 0 y 1 y lo x por el limite que indico en el parentesis.
-            x = Utils.RAND.nextDouble(regionMngr.getWidth()-1); // Genero un numero aleatorio entre 0 y 1 y lo multiplica por ese limite para (x, y)
-            y = Utils.RAND.nextDouble(regionMngr.getHeight()-1);
+        if (pos == null) {
+            // NextDoubole genera numero aleatorio entre 0 y 1 y lo x por el limite que
+            // indico en el parentesis.
+            x = Utils.RAND.nextDouble(regionMngr.getWidth() - 1); // Genero un numero aleatorio entre 0 y 1 y lo
+                                                                  // multiplica por ese limite para (x, y)
+            y = Utils.RAND.nextDouble(regionMngr.getHeight() - 1);
             pos = new Vector2D(x, y); // Igualo mi posicion para que apunte a la nueva posicion creada.
-        }
-        else{
+        } else {
             x = pos.getX();
             y = pos.getY();
             double width = regionMngr.getWidth();
             double height = regionMngr.getHeight();
 
-            while (x >= width) { x = x - width; }
-            while (x < 0) { x = x + width; }
-            while (y >= height) { y = y - height; }
-            while (y < 0) { y = y + height; }
+            while (x >= width) {
+                x = x - width;
+            }
+            while (x < 0) {
+                x = x + width;
+            }
+            while (y >= height) {
+                y = y - height;
+            }
+            while (y < 0) {
+                y = y + height;
+            }
 
             pos = new Vector2D(x, y);
         }
-         // Genero la posocion aleatoria para la posicion destino.
-         double xDest = Utils.RAND.nextDouble(regionMngr.getWidth()-1); // Genero un numero aleatorio entre 0 y 1 y lo multiplica por ese limite para (x, y)
-         double yDest = Utils.RAND.nextDouble(regionMngr.getHeight()-1);
-         dest = new Vector2D(xDest, yDest);
+        // Genero la posocion aleatoria para la posicion destino.
+        double xDest = Utils.RAND.nextDouble(regionMngr.getWidth() - 1); // Genero un numero aleatorio entre 0 y 1 y lo
+                                                                         // multiplica por ese limite para (x, y)
+        double yDest = Utils.RAND.nextDouble(regionMngr.getHeight() - 1);
+        dest = new Vector2D(xDest, yDest);
     }
 
-    public Animal deliverBaby(){
+    public Animal deliverBaby() {
         Animal baby = this.baby;
         this.baby = null;
         return baby;
     }
 
-    protected void move(double speed){
+    protected void move(double speed) {
         this.pos = this.pos.plus(dest.minus(pos).direction().scale(speed));
     }
 
     abstract protected void setNormalStateAction();
+
     abstract protected void setMateStateAction();
+
     abstract protected void setHungerStateAction();
+
     abstract protected void setDangerStateAction();
+
     abstract protected void setDeadStateAction();
 
     protected void setState(State state) {
-  	    this.state = state;
-  	    switch (state) {
-  	        case NORMAL:
-  		        setNormalStateAction();
-  		        break;
+        this.state = state; // cambio estado
+        switch (state) {
+            case NORMAL:
+                setNormalStateAction();
+                break;
             case MATE:
                 setMateStateAction();
                 break;
-        	case HUNGER:
+            case HUNGER:
                 setHungerStateAction();
                 break;
             case DANGER:
@@ -144,7 +159,7 @@ public abstract class Animal implements Entity, AnimalInfo {
             default:
                 break;
         }
-  	}
+    }
 
     @Override
     public State getState() {
@@ -173,7 +188,7 @@ public abstract class Animal implements Entity, AnimalInfo {
 
     @Override
     public double getSightRange() {
-       return this.sightRange;
+        return this.sightRange;
     }
 
     @Override
@@ -183,12 +198,12 @@ public abstract class Animal implements Entity, AnimalInfo {
 
     @Override
     public double getAge() {
-       return this.age;
+        return this.age;
     }
 
     @Override
     public Vector2D getDestination() {
-       return this.dest;
+        return this.dest;
     }
 
     @Override
@@ -204,9 +219,11 @@ public abstract class Animal implements Entity, AnimalInfo {
         this.diet = AnimalDiet;
     }
 
-    /*public void setActualState(State ActualState) {
-        this.ActualState = ActualState;
-    }*/
+    /*
+     * public void setActualState(State ActualState) {
+     * this.ActualState = ActualState;
+     * }
+     */
 
     public void setPos(Vector2D pos) {
         this.pos = pos;
