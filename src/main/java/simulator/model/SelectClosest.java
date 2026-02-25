@@ -1,10 +1,11 @@
 package simulator.model;
 
+import java.util.List;
+
 public class SelectClosest implements SelectionStrategy {
 
     @Override
-    public Object select(Object a, Object as) {
-        throw new UnsupportedOperationException("Not supported yet.");
+    public Animal select(Animal a, List<Animal> as) {
+        
     }
-
 }

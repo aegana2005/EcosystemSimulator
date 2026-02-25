@@ -2,6 +2,7 @@ package simulator.model;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
+
 import simulator.misc.Utils;
 import simulator.misc.Vector2D;
 
@@ -75,22 +76,35 @@ public abstract class Animal implements Entity, AnimalInfo {
         return j;
     }
 
-    @Override
-    public void update(double dt) {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
+    //@Override
+    // public void update(double dt) {}
 
-    // DUDA
     public void init(AnimalMapView regMngr){
+        double x, y;
         this.setRegionMngr(regMngr);
         if(pos == null){
-            this.regionMngr.
-
-
+            // NextDoubole genera numero aleatorio entre 0 y 1 y lo x por el limite que indico en el parentesis.
+            x = Utils.RAND.nextDouble(regionMngr.getWidth()-1); // Genero un numero aleatorio entre 0 y 1 y lo multiplica por ese limite para (x, y)
+            y = Utils.RAND.nextDouble(regionMngr.getHeight()-1);
+            pos = new Vector2D(x, y); // Igualo mi posicion para que apunte a la nueva posicion creada.
         }
         else{
+            x = pos.getX();
+            y = pos.getY();
+            double width = regionMngr.getWidth();
+            double height = regionMngr.getHeight();
 
+            while (x >= width) { x = x - width; }
+            while (x < 0) { x = x + width; }
+            while (y >= height) { y = y - height; }
+            while (y < 0) { y = y + height; }
+
+            pos = new Vector2D(x, y);
         }
+         // Genero la posocion aleatoria para la posicion destino.
+         double xDest = Utils.RAND.nextDouble(regionMngr.getWidth()-1); // Genero un numero aleatorio entre 0 y 1 y lo multiplica por ese limite para (x, y)
+         double yDest = Utils.RAND.nextDouble(regionMngr.getHeight()-1);
+         dest = new Vector2D(xDest, yDest);
     }
 
     public Animal deliverBaby(){
@@ -179,7 +193,7 @@ public abstract class Animal implements Entity, AnimalInfo {
 
     @Override
     public boolean isPregnant() {
-        throw new UnsupportedOperationException("Not supported yet.");
+        return this.baby != null;
     }
 
     public void setGeneticCode(String geneticCode) {

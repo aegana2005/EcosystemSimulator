@@ -37,5 +37,4 @@ public class Simulator implements JSONable {
         this.listaAnimales.add(a);
         this.rm.registerAnimal(a);
     }
-
 }

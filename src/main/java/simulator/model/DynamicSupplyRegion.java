@@ -2,7 +2,7 @@ package simulator.model;
 
 import simulator.misc.Utils;
 
-public class DynamicSupplyRegion extends Region {
+public class DynamicSupplyRegion extends Region { // Representa una region que da comida SOLO a animales herbivoros y la cantidad de comida puede crecer o decrecer.
 
     private double initFood;
     private double factor;

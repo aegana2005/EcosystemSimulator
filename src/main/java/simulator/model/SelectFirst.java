@@ -10,8 +10,7 @@ public class SelectFirst implements SelectionStrategy {
             return as.getFirst();
         }
         else{
-             throw new UnsupportedOperationException("Unimplemented method 'select'");
+             return null;
         }
     }
-
 }
