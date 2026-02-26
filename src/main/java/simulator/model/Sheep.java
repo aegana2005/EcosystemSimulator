@@ -26,13 +26,18 @@ public class Sheep extends Animal {
 
     @Override
     public void update(double dt) {
-        // RegionManager rm = this.regionMngr.;
         this.dt = dt;
         if (!this.state.equals(State.DEAD)) {
             this.setState(this.state);
-            this.regionMngr.getfood(this, dt);
+            if(// si pos fuera de mapa ajustarla y poner estado a normal){
+            }
             if ((this.getEnergy() == 0.0) || (this.getAge() > 8.0)) {
                 this.state = State.DEAD;
+            }
+            if(!this.getState().equals(State.DEAD)){
+                double comida;
+                comida = this.regionMngr.getfood(this, dt);
+                this.energy = Math.max(0.0, Math.min(100.0, this.energy));
             }
         }
     }
