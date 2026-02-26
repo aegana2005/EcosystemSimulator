@@ -176,14 +176,6 @@ public class RegionManager implements AnimalMapView {
         return this.regions;
     }
 
-    public int getCellWidth() {
-        return this.cellWidth;
-    }
-
-    public int getCellHeight() {
-        return this.cellHeight;
-    }
-
     @Override
     public int getCols() {
         return this.cols;

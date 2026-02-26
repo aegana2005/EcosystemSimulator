@@ -24,12 +24,29 @@ public class Sheep extends Animal {
         this.dangerSource = null;
     }
 
+    // Para comprobar si la posicion actual de la obeja esta dentro de las dimensiones de la matriz.
+    private boolean correctPos(){
+        int col = (int) Math.floor(this.getPosition().getX() / regionMngr.getRegionWidth());
+        int row = (int) Math.floor(this.getPosition().getY() / regionMngr.getRegionHeight());
+        return col >= 0 && col < regionMngr.getCols() && row >= 0 && row < regionMngr.getRows();
+    }
+
     @Override
     public void update(double dt) {
         this.dt = dt;
         if (!this.state.equals(State.DEAD)) {
             this.setState(this.state);
-            if(// si pos fuera de mapa ajustarla y poner estado a normal){
+            if(!this.correctPos()){
+                double x = pos.getX();
+                double y = pos.getY();
+                double width = regionMngr.getWidth();
+                double height = regionMngr.getHeight();
+
+                while (x >= width) x = (x - width);
+                while (x < 0) x = (x + width);
+                while (y >= height) y = (y - height);
+                while (y < 0) y = (y + height);
+                this.state = State.NORMAL;
             }
             if ((this.getEnergy() == 0.0) || (this.getAge() > 8.0)) {
                 this.state = State.DEAD;
