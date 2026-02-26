@@ -11,7 +11,7 @@ public abstract class Animal implements Entity, AnimalInfo {
     // Atributos que usaran los tipos de animales que heredaran de esta clase Animal
     protected String geneticCode; // cadena de caracteres que sirve para saber si dos animales pden emparejarse
     protected Diet diet; // Es el enumerado de la clase dieta
-    protected State state;
+    protected State state; // Estado del animal. Enumerado.
     protected Vector2D pos;
     protected Vector2D dest;
     protected double energy; // Si llega a 0.0, el animal muere.
