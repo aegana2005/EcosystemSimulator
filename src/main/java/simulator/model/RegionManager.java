@@ -57,8 +57,27 @@ public class RegionManager implements AnimalMapView{
 
     @Override
     public List<Animal> getAnimalsInRange(Animal e, Predicate<Animal> filter) {
+        List<Animal> visualRange = new ArrayList<Animal>();
+        // Para hacer el recorrido solo por las celdas que abarcan el campo de vision.
+        // Para ello empiezo en la fila donde reto la vision a la pos x hasta la pos x mas ese rango de vision, haciendo un cast para conseguir el entero.
+        // Lo mismo para el eje Y.
+        int colMin = (int) Math.floor((e.getPosition().getX() - e.getSightRange()) / cellWidth);
+        int colMax = (int) Math.floor((e.getPosition().getX() + e.getSightRange()) / cellWidth);
+        int filaMin = (int) Math.floor((e.getPosition().getY() - e.getSightRange()) / cellHeight);
+        int filaMax = (int) Math.floor((e.getPosition().getY() + e.getSightRange()) / cellHeight);
+        for(int i = filaMin; i <= filaMax; i++){ // aqui consulto las regiones del campo visual de Animal e
+            for(int j = colMin; j <= colMax; j++){
+                if(this.intToMatrix(i, j)){
+                    for(Animal a: this.getRegion(i, j).getAnimals()){
+                        if(a != e && e.getPosition().distanceTo(a.getPosition()) <= e.getSightRange() && filter.test(a)){
+                            visualRange.add(a);
+                        }
+                    }
+                }
 
-        throw new UnsupportedOperationException("Not supported yet.");
+            }
+        }
+        return visualRange;
     }
 
     // Al ser un AnimalInfo, no se si se puede acceder como clave al mapa.

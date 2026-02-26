@@ -7,7 +7,7 @@ public class SelectClosest implements SelectionStrategy {
     @Override
     public Animal select(Animal a, List<Animal> as) {
         if (!as.isEmpty()) {
-            Animal closestAnimal = as.getFirst();
+            Animal closestAnimal = as.getFirst(); // Me guardo el pirmero de la lista.
             double distance = -1;
             double minDistance = a.pos.distanceTo(closestAnimal.getPosition());
             for (Animal i : as) {

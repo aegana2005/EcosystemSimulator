@@ -36,6 +36,7 @@ public class Sheep extends Animal {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
+
     @Override
     protected void setNormalStateAction() {
         advanceAnimal();
@@ -53,15 +54,17 @@ public class Sheep extends Animal {
 
     }
 
-    private static double aux(double v, double min, double max) {
-        return Math.max(min, Math.min(max, v)); // si supera un numero por arriba o por abajo se queda con los valores
-                                                // que yo quiero
-    }
-
+    // Metodo que elige una posicion aleatoria cuando en el estado normal cuando la distancia entre pos y dest es menor a 8.
     private void randomDestination() {
         double x = Utils.RAND.nextDouble(regionMngr.getWidth() - 1);
         double y = Utils.RAND.nextDouble(regionMngr.getHeight() - 1);
         this.dest = new Vector2D(x, y);
+    }
+
+    //Metodo que devuelve el valor actualizado para las variables con un rango minimo y maximo que no puede sobrepasar el valor v.
+    private static double aux(double v, double min, double max) {
+        return Math.max(min, Math.min(max, v)); // si supera un numero por arriba o por abajo se queda con los valores
+                                                // que yo quiero
     }
 
     private void changeState() {
@@ -77,13 +80,14 @@ public class Sheep extends Animal {
 
     @Override
     protected void setMateStateAction() {
-
     }
 
     @Override
     protected void setHungerStateAction() {
         throw new UnsupportedOperationException("Not supported yet.");
     }
+
+
 
     @Override
     protected void setDangerStateAction() {
@@ -93,7 +97,33 @@ public class Sheep extends Animal {
         if (this.dangerSource == null) {
             this.advanceAnimal();
         }
+        else{
+            double form = 2.0*speed*dt*Math.exp((energy-100.0)*0.007);
+            this.setDest(this.getPosition.plus(pos.minus(dangerSource.getPosition()).direction()));
+            this.move(form);
+            this.age += dt;
+            this.energy = aux(this.energy - 20.0 * 1.2 * dt, 0.0, 100.0); // le paso el valor a actualizar, el minimo y el maximo.
+            this.deseo = aux(this.deseo + 40.0 * dt, 0.0, 100.0);
+            this.stateChangeDanger();
+        }
     }
+
+    // Metodo para hacer el paso tres para el estado DANGER.
+    private void stateChangeDanger(){
+        // terminar esto.
+        if(this.dangerSource == null || ){
+
+        }
+        if(this.dangerSource == null){
+            if(this.desire < 65.0){
+               this.state = State.NORMAL;
+            }else{
+                 this.state = State.MATE;
+            }
+        }
+    }
+
+
 
     @Override
     protected void setDeadStateAction() {
