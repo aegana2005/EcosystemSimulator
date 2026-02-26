@@ -37,7 +37,7 @@ public class Sheep extends Animal {
             if(!this.getState().equals(State.DEAD)){
                 double comida;
                 comida = this.regionMngr.getfood(this, dt);
-                this.energy = Math.max(0.0, Math.min(100.0, this.energy));
+                this.energy = Math.max(0.0, Math.min(100.0, comida));
             }
         }
     }
